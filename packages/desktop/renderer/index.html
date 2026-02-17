@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ImgConv – Image Batch Converter</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0f0f12;
+        --surface: #18181c;
+        --surface-hover: #1f1f24;
+        --border: #2a2a32;
+        --text: #e4e4e7;
+        --text-muted: #71717a;
+        --accent: #6366f1;
+        --accent-hover: #818cf8;
+        --success: #22c55e;
+        --radius: 12px;
+        --radius-sm: 8px;
+        --shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "DM Sans", system-ui, -apple-system, sans-serif;
+        margin: 0;
+        min-height: 100vh;
+        background: var(--bg);
+        color: var(--text);
+        font-size: 15px;
+        line-height: 1.5;
+      }
+
+      .app {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 32px 24px;
+      }
+
+      header {
+        margin-bottom: 32px;
+      }
+
+      .logo {
+        font-weight: 700;
+        font-size: 1.5rem;
+        letter-spacing: -0.02em;
+        color: var(--text);
+      }
+
+      .logo span {
+        color: var(--accent);
+      }
+
+      h1 {
+        font-size: 1.75rem;
+        font-weight: 600;
+        margin: 0 0 8px 0;
+        letter-spacing: -0.02em;
+      }
+
+      .subtitle {
+        color: var(--text-muted);
+        font-size: 0.95rem;
+        margin: 0;
+      }
+
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 20px 24px;
+        margin-bottom: 20px;
+        box-shadow: var(--shadow);
+      }
+
+      .card-title {
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--text-muted);
+        margin-bottom: 12px;
+      }
+
+      .row {
+        display: flex;
+        gap: 16px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+
+      .row + .row {
+        margin-top: 12px;
+      }
+
+      label {
+        display: inline-flex;
+        gap: 8px;
+        align-items: center;
+        cursor: pointer;
+        color: var(--text);
+      }
+
+      input[type="number"] {
+        width: 72px;
+        padding: 10px 12px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        background: var(--bg);
+        color: var(--text);
+        font: inherit;
+      }
+
+      input[type="number"]:focus {
+        outline: none;
+        border-color: var(--accent);
+      }
+
+      select {
+        padding: 10px 36px 10px 12px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        background: var(--bg);
+        color: var(--text);
+        font: inherit;
+        cursor: pointer;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2371717a' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 12px center;
+      }
+
+      select:focus {
+        outline: none;
+        border-color: var(--accent);
+      }
+
+      .btn {
+        padding: 10px 20px;
+        border-radius: var(--radius-sm);
+        border: none;
+        font: inherit;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background 0.15s, transform 0.1s;
+      }
+
+      .btn:active {
+        transform: scale(0.98);
+      }
+
+      .btn-primary {
+        background: var(--accent);
+        color: white;
+      }
+
+      .btn-primary:hover:not(:disabled) {
+        background: var(--accent-hover);
+      }
+
+      .btn-secondary {
+        background: var(--surface-hover);
+        color: var(--text);
+        border: 1px solid var(--border);
+      }
+
+      .btn-secondary:hover:not(:disabled) {
+        background: var(--border);
+      }
+
+      .btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      #inputPath {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        word-break: break-all;
+      }
+
+      #inputPath.has-path {
+        color: var(--success);
+      }
+
+      .format-flow {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .format-flow .label {
+        color: var(--text-muted);
+        font-size: 0.95rem;
+      }
+
+      .format-flow select {
+        min-width: 100px;
+      }
+
+      .sizes-row {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+
+      .sizes-row label {
+        padding: 6px 12px;
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        font-size: 0.9rem;
+      }
+
+      .sizes-row label:hover {
+        border-color: var(--accent);
+      }
+
+      .sizes-row input:checked + span {
+        color: var(--accent);
+      }
+
+      .actions-row {
+        margin-top: 20px;
+        padding-top: 16px;
+        border-top: 1px solid var(--border);
+      }
+
+      #status {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+      }
+
+      #status.done {
+        color: var(--success);
+      }
+
+      #status.error {
+        color: #ef4444;
+      }
+
+      .log-box {
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        padding: 16px;
+        max-height: 240px;
+        overflow: auto;
+        font-family: ui-monospace, monospace;
+        font-size: 13px;
+        line-height: 1.5;
+        color: var(--text-muted);
+      }
+
+      .log-box:empty::before {
+        content: "Logs will appear here…";
+        color: var(--text-muted);
+        opacity: 0.7;
+      }
+
+      .same-size-label {
+        font-weight: 500;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <header>
+        <div class="logo">Img<span>Conv</span></div>
+        <h1>Image Batch Converter</h1>
+        <p class="subtitle">
+          Converts PNG, JPG, and WebP images to your chosen format (e.g. PNG → WebP). Same filename, new extension—or add optional sizes.
+        </p>
+      </header>
+
+      <div class="card">
+        <div class="card-title">Input folder</div>
+        <div class="row">
+          <button id="pickBtn" class="btn btn-secondary">Pick folder</button>
+          <div>
+            <div id="inputPath">No folder selected</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Output format</div>
+        <div class="format-flow">
+          <span class="label">Convert to</span>
+          <select id="format">
+            <option value="webp" selected>WEBP</option>
+            <option value="avif">AVIF</option>
+            <option value="png">PNG</option>
+            <option value="jpg">JPG</option>
+          </select>
+        </div>
+        <div class="row" style="margin-top: 16px">
+          <label title="80–85: high quality, web-optimized. Lower = smaller files.">
+            Quality (1–100)
+            <input id="quality" type="number" min="1" max="100" value="82" />
+          </label>
+          <span style="color: var(--text-muted); font-size: 0.85rem;">80–85 for web</span>
+          <label class="same-size-label">
+            <input id="includeOriginal" type="checkbox" checked />
+            Same size (one output per image, same filename)
+          </label>
+        </div>
+        <div class="row" style="margin-top: 12px">
+          <span class="label" style="margin-right: 8px">Extra widths</span>
+          <div class="sizes-row">
+            <label><input type="checkbox" class="size" value="320" /> 320</label>
+            <label><input type="checkbox" class="size" value="640" /> 640</label>
+            <label><input type="checkbox" class="size" value="960" /> 960</label>
+            <label><input type="checkbox" class="size" value="1280" /> 1280</label>
+            <label><input type="checkbox" class="size" value="1920" /> 1920</label>
+          </div>
+        </div>
+        <div class="row" style="margin-top: 12px">
+          <label>
+            Suffix for widths
+            <select id="suffixStyle">
+              <option value="at" selected>name@640.webp</option>
+              <option value="w">name-640w.webp</option>
+            </select>
+          </label>
+          <label title="How many images are converted at the same time. Higher = faster, more CPU.">
+            Concurrency
+            <input id="concurrency" type="number" min="1" max="24" value="6" />
+          </label>
+          <span style="color: var(--text-muted); font-size: 0.85rem;">images at once</span>
+        </div>
+        <div class="row actions-row">
+          <button id="runBtn" class="btn btn-primary" disabled>Convert</button>
+          <button id="openOutBtn" class="btn btn-secondary" disabled>Open output folder</button>
+          <span id="status"></span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Logs</div>
+        <pre id="log" class="log-box"></pre>
+      </div>
+    </div>
+
+    <script>
+      const pickBtn = document.getElementById("pickBtn");
+      const runBtn = document.getElementById("runBtn");
+      const openOutBtn = document.getElementById("openOutBtn");
+      const inputPathEl = document.getElementById("inputPath");
+      const logEl = document.getElementById("log");
+      const statusEl = document.getElementById("status");
+
+      let inputDir = null;
+      let outputDir = null;
+      let running = false;
+
+      function log(line) {
+        logEl.textContent += line + "\n";
+        logEl.scrollTop = logEl.scrollHeight;
+      }
+
+      function getSizes() {
+        return Array.from(document.querySelectorAll(".size"))
+          .filter((cb) => cb.checked)
+          .map((cb) => Number(cb.value))
+          .sort((a, b) => a - b);
+      }
+
+      function autoOutputDir(inputDir, format) {
+        const stamp = new Date().toISOString().replace(/[:.]/g, "-");
+        return inputDir + "/_converted_" + format + "_" + stamp;
+      }
+
+      function setUI() {
+        runBtn.disabled = !inputDir || running;
+        openOutBtn.disabled = !outputDir || running;
+      }
+
+      pickBtn.addEventListener("click", async () => {
+        const picked = await window.api.pickFolder();
+        if (!picked) return;
+        inputDir = picked;
+        inputPathEl.textContent = picked;
+        inputPathEl.classList.add("has-path");
+        log("Selected: " + picked);
+        setUI();
+      });
+
+      runBtn.addEventListener("click", async () => {
+        const includeOriginal = document.getElementById("includeOriginal").checked;
+        const sizes = getSizes();
+        if (!includeOriginal && !sizes.length) {
+          alert("Enable 'Same size' or pick at least one extra width.");
+          return;
+        }
+
+        const format = document.getElementById("format").value;
+        const quality = Number(document.getElementById("quality").value);
+        const suffixStyle = document.getElementById("suffixStyle").value;
+        const concurrency = Number(document.getElementById("concurrency").value);
+
+        outputDir = autoOutputDir(inputDir, format);
+
+        const opts = {
+          inputDir,
+          outputDir,
+          format,
+          quality,
+          sizes,
+          includeOriginal,
+          suffixStyle,
+          keepFolders: true,
+          concurrency,
+        };
+
+        running = true;
+        statusEl.textContent = "Running…";
+        statusEl.className = "";
+        logEl.textContent = "";
+        setUI();
+
+        log("Output: " + outputDir);
+        log("Options: " + JSON.stringify(opts, null, 2));
+
+        try {
+          const res = await window.api.runConvert(opts);
+          log("Done: " + JSON.stringify(res.result));
+          statusEl.textContent = `Done. Success: ${res.result.successCount}, Errors: ${res.result.errorCount}`;
+          statusEl.classList.add("done");
+          openOutBtn.disabled = false;
+        } catch (e) {
+          log("Fatal: " + String(e));
+          statusEl.textContent = "Error";
+          statusEl.classList.add("error");
+        } finally {
+          running = false;
+          setUI();
+        }
+      });
+
+      openOutBtn.addEventListener("click", async () => {
+        if (!outputDir) return;
+        await window.api.openFolder(outputDir);
+      });
+
+      window.api.onProgress((e) => {
+        if (e.type === "scan_done") log("Found files: " + e.fileCount);
+        if (e.type === "file_start") log("Start: " + e.inputPath);
+        if (e.type === "file_done") log("Done: " + e.inputPath);
+        if (e.type === "file_error")
+          log("Error: " + e.inputPath + " | " + e.error);
+        if (e.type === "all_done")
+          log("All done, output: " + e.outputDir);
+      });
+
+      setUI();
+    </script>
+  </body>
+</html>
