@@ -1,6 +1,6 @@
 export type OutputFormat = "webp" | "avif" | "png" | "jpg";
 
-export type SuffixStyle = "at" | "w";
+export type SuffixStyle = "dash" | "at" | "w";
 
 export type ConvertOptions = {
   inputDir: string;

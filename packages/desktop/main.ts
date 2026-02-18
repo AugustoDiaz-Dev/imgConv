@@ -7,8 +7,8 @@ let win: BrowserWindow | null = null;
 
 function createWindow() {
   win = new BrowserWindow({
-    width: 980,
-    height: 720,
+    width: 880,
+    height: 560,
     title: "ImgConv",
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
