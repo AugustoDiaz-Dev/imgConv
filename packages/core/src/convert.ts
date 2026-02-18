@@ -18,8 +18,9 @@ function formatOutPath(
   suffixStyle: SuffixStyle
 ) {
   if (width === null) return `${basePathNoExt}.${format}`;
-  const suffix = suffixStyle === "at" ? `@${width}` : `-${width}w`;
-  return `${basePathNoExt}${suffix}.${format}`;
+  if (suffixStyle === "dash") return `${basePathNoExt}-${width}.${format}`;
+  if (suffixStyle === "at") return `${basePathNoExt}@${width}.${format}`;
+  return `${basePathNoExt}-${width}w.${format}`;
 }
 
 async function convertOne(params: {
