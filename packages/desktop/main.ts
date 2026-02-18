@@ -8,8 +8,10 @@ let win: BrowserWindow | null = null;
 function createWindow() {
   win = new BrowserWindow({
     width: 880,
-    height: 560,
+    height: 640,
     title: "ImgConv",
+    show: false,
+    center: true,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       contextIsolation: true,
@@ -17,6 +19,11 @@ function createWindow() {
   });
 
   win.loadFile(path.join(__dirname, "..", "renderer", "index.html"));
+
+  win.once("ready-to-show", () => {
+    win?.show();
+    win?.center();
+  });
 }
 
 app.whenReady().then(createWindow);
